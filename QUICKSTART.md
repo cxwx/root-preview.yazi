@@ -18,9 +18,9 @@ ya pkg add .
 将以下内容添加到你的 `~/.config/yazi/yazi.toml` 文件的末尾：
 
 ```toml
-[[preview.rules]]
+[[plugin.prepend_previewers]]
 name = "*.root"
-use = "root-preview"
+run = "root-preview"
 ```
 
 ## 完整配置示例

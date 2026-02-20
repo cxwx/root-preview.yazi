@@ -48,9 +48,9 @@ root-preview = "root-preview"
 或者更简单的方式，在你的 `yazi.toml` 中添加：
 
 ```toml
-[[preview.rules]]
+[[plugin.prepend_previewers]]
 name = "*.root"
-use = "root-preview"
+run = "root-preview"
 ```
 
 ## 依赖

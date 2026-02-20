@@ -5,10 +5,10 @@
 wrap = "no"
 
 # 预览器规则定义
-[[preview.rules]]
+[[plugin.prepend_previewers]]
 # ROOT 文件预览
 name = "*.root"
-use = "root-preview"
+run = "root-preview"
 
 # 其他预览规则示例...
 # { name = "*/", use = "folder" },
