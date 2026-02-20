@@ -1,0 +1,16 @@
+# Yazi 配置示例 - ROOT 文件预览
+# 将此配置添加到你的 ~/.config/yazi/yazi.toml 文件中
+
+[preview]
+wrap = "no"
+
+# 预览器规则定义
+[[preview.rules]]
+# ROOT 文件预览
+name = "*.root"
+use = "root-preview"
+
+# 其他预览规则示例...
+# { name = "*/", use = "folder" },
+# { name = "*.text", use = "text" },
+# { mime = "image/*", use = "image" },
