@@ -21,44 +21,49 @@ local function strip_ansi_codes(str)
     return str:gsub("\x1b%[[%d;]*m", "")
 end
 
--- 异步预览 ROOT 文件内容
+-- 预览 ROOT 文件内容
 function M:peek(job)
     -- 检查依赖
     if not check_rootls() then
-        ya.err("ROOT preview plugin: rootls command not found")
-        return 1
+        ya.preview_widget(job, ui.Text.parse("Error: rootls command not found. Please install ROOT framework.\nSee: https://root.cern/install/"):area(job.area))
+        return
     end
 
-    local file = job.file.url
-    local cmd = string.format("rootls -ctRr %q 2>&1", file)
+    -- 修复：将 Url 对象转换为字符串
+    local file = tostring(job.file.url)
 
     -- 尝试从缓存读取
     if cache[file] then
-        job:absolute(cache[file])
-        return 1
+        ya.preview_widget(job, ui.Text.parse(cache[file]):area(job.area):wrap(ui.Wrap.NO))
+        return
     end
 
-    -- 异步执行 rootls 命令
-    return ya.urlopen({
-        cmd = { "sh", "-c", cmd },
-    }, function(result)
-        if result and result.stdout then
-            -- 清理 ANSI 颜色代码以提高可读性
-            local content = strip_ansi_codes(result.stdout)
-            cache[file] = content
-            job:absolute(content)
-        else
-            ya.err("ROOT preview plugin: failed to execute rootls")
-            job:absolute("Failed to preview ROOT file")
-        end
-    end)
+    -- 使用 Yazi 的 Command API 执行 rootls 命令
+    local output, err = Command("rootls"):arg({ "-t", "-r", file }):output()
+
+    if err then
+        ya.err("ROOT preview plugin: failed to execute rootls - " .. tostring(err))
+        ya.preview_widget(job, ui.Text.parse("Failed to preview ROOT file\n" .. tostring(err)):area(job.area):wrap(ui.Wrap.YES))
+        return
+    end
+
+    -- 清理 ANSI 颜色代码以提高可读性
+    local content = strip_ansi_codes(output.stdout)
+    cache[file] = content
+
+    -- 使用 ui.Text 显示内容
+    ya.preview_widget(job, ui.Text.parse(content):area(job.area):wrap(ui.Wrap.NO))
 end
 
--- 处理预览滚动（可选实现）
+-- 处理预览滚动
 function M:seek(job)
-    -- 对于纯文本输出，seek 可以由 Yazi 默认处理
-    -- 如果需要实现自定义滚动，可以在这里处理
-    return 1
+    local h = cx.active.current.hovered
+    if h and h.url == job.file.url then
+        ya.emit("peek", {
+            math.max(0, cx.active.preview.skip + job.units),
+            only_if = job.file.url,
+        })
+    end
 end
 
 -- 插件初始化
