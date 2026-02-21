@@ -16,10 +16,7 @@
 
 ```bash
 # 从 git 仓库安装
-ya pkg add https://github.com/chenxu7/root-preview.yazi
-
-# 或者从本地仓库安装
-ya pkg add .
+ya pkg add cxwx/root-preview
 ```
 
 ### 方法 2: 手动安装
@@ -203,4 +200,4 @@ MIT License
 
 ## 作者
 
-chenxu
+GLM-5 @ claude
