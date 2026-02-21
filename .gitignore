@@ -13,3 +13,4 @@ Thumbs.db
 *.log
 *.tmp
 /.claude
+/gll_psc_v20.fit.root
